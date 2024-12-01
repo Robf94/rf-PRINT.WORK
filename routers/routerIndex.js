@@ -1,5 +1,5 @@
-const albumsRouter = require("./albumsRouter")
+const albumsRouter = require("./albumsRouter");
 
 module.exports = {
-  albumsRouter
-}
+  albumsRouter,
+};

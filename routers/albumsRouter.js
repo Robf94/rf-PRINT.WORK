@@ -1,7 +1,8 @@
-const controllers = require("../controllers/albumsController");
-const albumsRouter = require("express").Router();
+const express = require("express");
+const { getTopAlbums } = require("../controllers/albumsController");
+const albumsRouter = express.Router();
 
 // GET top 100 albums
-albumsRouter.get("/albums", controllers.getTopAlbums);
+albumsRouter.get("/", getTopAlbums);
 
 module.exports = albumsRouter;
