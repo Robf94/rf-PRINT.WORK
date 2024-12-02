@@ -1,9 +1,16 @@
 const { fetchTopAlbums, fetchAlbumById } = require("../models/albumsModel");
 
 function getTopAlbums(request, response, next) {
+  const page = parseInt(request.query._page) || 1;
+  const limit = 10;
+
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+
   fetchTopAlbums()
     .then((albums) => {
-      response.status(200).send({ albums });
+      const paginatedAlbums = albums.slice(startIndex, endIndex);
+      response.status(200).send({ paginatedAlbums });
     })
     .catch((err) => {
       next(err);
