@@ -7,7 +7,7 @@ describe("GET /api/albums", () => {
       .get("/api/albums")
       .expect(200)
       .then(({ body }) => {
-        const albums = body.albums;
+        const albums = body.paginatedAlbums;
         albums.forEach((album) => {
           expect(typeof album.artistName).toBe("string");
           expect(typeof album.id).toBe("string");
@@ -24,6 +24,19 @@ describe("GET /api/albums", () => {
           expect(typeof album.artworkUrl100).toBe("string");
           expect(Array.isArray(album.genres)).toBe(true);
           expect(typeof album.url).toBe("string");
+        });
+      });
+  });
+
+  it("200: should return 10 albums per page for pagination", () => {
+    return request(app)
+      .get("/api/albums?_page=1&_limit=10")
+      .expect(200)
+      .then(({ body }) => {
+        const albums = body.paginatedAlbums;
+        expect(albums.length).toBe(10);
+        albums.forEach((album) => {
+          expect(typeof album.artistName).toBe("string");
         });
       });
   });
@@ -76,12 +89,12 @@ describe("GET /api/albums/:id", () => {
       });
   });
 
-  it('400: should return the relevant message if given an invalid albumId', () => {
+  it("400: should return the relevant message if given an invalid albumId", () => {
     return request(app)
       .get("/api/albums/invalid-id")
       .expect(400)
       .then(({ body }) => {
-      expect(body.msg).toEqual("album ID must be a number.")
-    })
+        expect(body.msg).toEqual("album ID must be a number.");
+      });
   });
 });
