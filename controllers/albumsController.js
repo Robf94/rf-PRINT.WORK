@@ -2,7 +2,7 @@ const { fetchTopAlbums, fetchAlbumById } = require("../models/albumsModel");
 
 function getTopAlbums(request, response, next) {
   // const page = parseInt(request.query._page) || 1;
-  // const limit = 10;
+  const limit = 10 || 100
 
   // const startIndex = (page - 1) * limit;
   // const endIndex = page * limit;
