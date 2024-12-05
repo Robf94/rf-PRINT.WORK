@@ -1,18 +1,34 @@
 const { fetchTopAlbums, fetchAlbumById } = require("../models/albumsModel");
 
 function getTopAlbums(request, response, next) {
-  // const page = parseInt(request.query._page) || 1;
-  const limit = request.query.limit || 100
+  const page = parseInt(request.query.page);
+  const limit = parseInt(request.query.limit) || 100;
 
-  // const startIndex = (page - 1) * limit;
-  // const endIndex = page * limit;
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
 
   fetchTopAlbums()
     .then((albums) => {
-      // const paginatedAlbums = albums.slice(startIndex, endIndex);
-      // response.status(200).send({ paginatedAlbums });
-      const limitAlbums = albums.slice(0, limit)
-      response.status(200).send({albums: limitAlbums})
+      const paginatedAlbums = albums.slice(startIndex, endIndex);
+      const results = {
+        albums: paginatedAlbums,
+      };
+
+      if (endIndex < albums.length) {
+        results.next = {
+          page: page + 1,
+          limit: limit,
+        };
+      }
+
+      if (startIndex > 0) {
+        results.previous = {
+          page: page - 1,
+          limit: limit,
+        };
+      }
+
+      response.status(200).send(results);
     })
     .catch((err) => {
       next(err);
