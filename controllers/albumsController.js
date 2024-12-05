@@ -1,7 +1,7 @@
 const { fetchTopAlbums, fetchAlbumById } = require("../models/albumsModel");
 
 function getTopAlbums(request, response, next) {
-  const page = parseInt(request.query.page);
+  const page = parseInt(request.query.page) || 1;
   const limit = parseInt(request.query.limit) || 100;
 
   const startIndex = (page - 1) * limit;
