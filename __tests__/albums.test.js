@@ -2,69 +2,67 @@ const request = require("supertest");
 const app = require("../app");
 
 describe("GET /api/albums", () => {
-  // it("200: should respond with an array of the top 100 albums", () => {
-  //   return request(app)
-  //     .get("/api/albums")
-  //     .expect(200)
-  //     .then(({ body }) => {
-  //       const albums = body.paginatedAlbums;
-  //       albums.forEach((album) => {
-  //         expect(typeof album.artistName).toBe("string");
-  //         expect(typeof album.id).toBe("string");
-  //         expect(typeof album.name).toBe("string");
-  //         expect(typeof album.releaseDate).toBe("string");
-  //         expect(album.kind).toEqual("albums");
-  //         if (album.artistName === "Various Artists") {
-  //           expect(album.artistId).toBeUndefined();
-  //           expect(album.artistUrl).toBeUndefined();
-  //         } else {
-  //           expect(typeof album.artistId).toBe("string");
-  //           expect(typeof album.artistUrl).toBe("string");
-  //         }
-  //         expect(typeof album.artworkUrl100).toBe("string");
-  //         expect(Array.isArray(album.genres)).toBe(true);
-  //         expect(typeof album.url).toBe("string");
-  //       });
-  //     });
-  // });
-    it("200: should respond with an array of the top 100 albums", () => {
-      return request(app)
-        .get("/api/albums")
-        .expect(200)
-        .then(({ body }) => {
-          const albums = body.albums;
-          albums.forEach((album) => {
-            expect(typeof album.artistName).toBe("string");
-            expect(typeof album.id).toBe("string");
-            expect(typeof album.name).toBe("string");
-            expect(typeof album.releaseDate).toBe("string");
-            expect(album.kind).toEqual("albums");
-            if (album.artistName === "Various Artists") {
-              expect(album.artistId).toBeUndefined();
-              expect(album.artistUrl).toBeUndefined();
-            } else {
-              expect(typeof album.artistId).toBe("string");
-              expect(typeof album.artistUrl).toBe("string");
-            }
-            expect(typeof album.artworkUrl100).toBe("string");
-            expect(Array.isArray(album.genres)).toBe(true);
-            expect(typeof album.url).toBe("string");
-          });
+  it("200: should respond with an array of the top 100 albums", () => {
+    return request(app)
+      .get("/api/albums")
+      .expect(200)
+      .then(({ body }) => {
+        const albums = body.albums;
+        albums.forEach((album) => {
+          expect(typeof album.artistName).toBe("string");
+          expect(typeof album.id).toBe("string");
+          expect(typeof album.name).toBe("string");
+          expect(typeof album.releaseDate).toBe("string");
+          expect(album.kind).toEqual("albums");
+          if (album.artistName === "Various Artists") {
+            expect(album.artistId).toBeUndefined();
+            expect(album.artistUrl).toBeUndefined();
+          } else {
+            expect(typeof album.artistId).toBe("string");
+            expect(typeof album.artistUrl).toBe("string");
+          }
+          expect(typeof album.artworkUrl100).toBe("string");
+          expect(Array.isArray(album.genres)).toBe(true);
+          expect(typeof album.url).toBe("string");
         });
-    });
+      });
+  });
 
-  // it("200: should return 10 albums per page for pagination", () => {
-  //   return request(app)
-  //     .get("/api/albums?_page=1&_limit=10")
-  //     .expect(200)
-  //     .then(({ body }) => {
-  //       const albums = body.paginatedAlbums;
-  //       expect(albums.length).toBe(10);
-  //       albums.forEach((album) => {
-  //         expect(typeof album.artistName).toBe("string");
-  //       });
-  //     });
-  // });
+  it("200: should return paginated albums with page and _imit", () => {
+    return request(app)
+      .get("/api/albums/paginated?page=1&limit=20")
+      .expect(200)
+      .then(({ body }) => {
+        const albums = body.albums;
+        expect(albums).toHaveLength(20);
+        albums.forEach((album) => {
+          expect(typeof album.artistName).toBe("string");
+        });
+      });
+  });
+
+  it("200: should return different data for different pages", () => {
+    return request(app)
+      .get("/api/albums?page=1&limit=20")
+      .expect(200)
+      .then(({ body: firstPage }) => {
+        return request(app)
+          .get("/api/albums?_page=2&_limit=20")
+          .expect(200)
+          .then(({ body: secondPage }) => {
+            expect(firstPage.albums).not.toEqual(secondPage.albums);
+          });
+      });
+  });
+
+  it("404: should return an empty array if the page does not exist", () => {
+    return request(app)
+      .get("/api/albums?page=9999&limit=20")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Page not found");
+      });
+  });
 });
 
 describe("GET /api/albums/:id", () => {

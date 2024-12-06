@@ -4,12 +4,21 @@ function getTopAlbums(request, response, next) {
   const page = parseInt(request.query.page) || 1;
   const limit = parseInt(request.query.limit) || 100;
 
-  const startIndex = (page - 1) * limit;
-  const endIndex = page * limit;
+  if (isNaN(page) || isNaN(limit) || page <= 0 || limit <= 0) {
+    return response.status(400).send({ msg: "Bad request" });
+  }
 
   fetchTopAlbums()
     .then((albums) => {
+      const startIndex = (page - 1) * limit;
+      const endIndex = page * limit;
+
+      if (startIndex >= albums.length) {
+        return response.status(404).send({ msg: "Page not found" });
+      }
+
       const paginatedAlbums = albums.slice(startIndex, endIndex);
+
       const results = {
         albums: paginatedAlbums,
       };
