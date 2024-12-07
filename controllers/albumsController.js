@@ -1,5 +1,13 @@
 const { fetchTopAlbums, fetchAlbumById } = require("../models/albumsModel");
 
+function getAllAlbums(request, response, next) {
+  fetchTopAlbums()
+    .then((albums) => {
+      response.status(200).send({ albums });
+    })
+    .catch(next);
+}
+
 function getTopAlbums(request, response, next) {
   const page = parseInt(request.query.page) || 1;
   const limit = parseInt(request.query.limit) || 100;
@@ -64,4 +72,4 @@ function getAlbumById(request, response, next) {
     });
 }
 
-module.exports = { getTopAlbums, getAlbumById };
+module.exports = { getAllAlbums, getTopAlbums, getAlbumById };
