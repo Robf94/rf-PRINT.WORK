@@ -43,7 +43,7 @@ describe("GET /api/albums", () => {
 
   it("200: should return different data for different pages", () => {
     return request(app)
-      .get("/api/albums?page=1&limit=20")
+      .get("/api/albums/paginated?page=1&limit=20")
       .expect(200)
       .then(({ body: firstPage }) => {
         return request(app)
@@ -57,7 +57,7 @@ describe("GET /api/albums", () => {
 
   it("404: should return an empty array if the page does not exist", () => {
     return request(app)
-      .get("/api/albums?page=9999&limit=20")
+      .get("/api/albums/paginated?page=9999&limit=20")
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toEqual("Page not found");
