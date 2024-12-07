@@ -18,21 +18,8 @@ function fetchAlbumById(id) {
   return api
     .get(`/music/most-played/100/albums.json?id=${id}`)
     .then(({ data }) => {
-      let matchingAlbum = null;
-
-      data.feed.results.forEach((album) => {
-        if (album.id === id) {
-          matchingAlbum = album
-        }
-      })
-
-      if (!matchingAlbum) {
-        return Promise.reject({
-          status: 404,
-          msg: "Album does not exist, or is not currently in the top 100.",
-        });
-      }
-    return matchingAlbum;
+    const matchingAlbum = data.feed.results.find(album => album.id === id);
+    return matchingAlbum || null;
   });
 }
 
