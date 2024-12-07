@@ -15,11 +15,15 @@ function fetchTopAlbums() {
 }
 
 function fetchAlbumById(id) {
-  return api
-    .get(`/music/most-played/100/albums.json?id=${id}`)
-    .then(({ data }) => {
-    const matchingAlbum = data.feed.results.find(album => album.id === id);
-    return matchingAlbum || null;
+  return api.get(`/music/most-played/100/albums.json?id=${id}`).then(({ data }) => {
+    const album = data.feed.results.find((entry) => entry.id === id);
+    if (!album) {
+      return Promise.reject({
+        status: 404,
+        msg: "Album does not exist, or is not currently in the top 100.",
+      });
+    }
+    return album;
   });
 }
 
