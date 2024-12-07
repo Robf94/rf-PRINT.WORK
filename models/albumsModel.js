@@ -4,8 +4,6 @@ const api = axios.create({
   baseURL: "https://rss.applemarketingtools.com/api/v2/gb",
 });
 
-// Look at making url more dynamic
-
 function fetchTopAlbums() {
   return api.get("/music/most-played/100/albums.json").then(({ data }) => {
     const albums = data.feed.results;
@@ -17,15 +15,24 @@ function fetchTopAlbums() {
 }
 
 function fetchAlbumById(id) {
-  return api.get(`/music/most-played/100/albums.json?id=${id}`).then(({ data }) => {
-    const album = data.feed.results.find((entry) => entry.id === id);
-    if (!album) {
-      return Promise.reject({
-        status: 404,
-        msg: "Album does not exist, or is not currently in the top 100.",
-      });
-    }
-    return album;
+  return api
+    .get(`/music/most-played/100/albums.json?id=${id}`)
+    .then(({ data }) => {
+      let matchingAlbum = null;
+
+      data.feed.results.forEach((album) => {
+        if (album.id === id) {
+          matchingAlbum = album
+        }
+      })
+
+      if (!matchingAlbum) {
+        return Promise.reject({
+          status: 404,
+          msg: "Album does not exist, or is not currently in the top 100.",
+        });
+      }
+    return matchingAlbum;
   });
 }
 
